@@ -1,22 +1,56 @@
+import csv
 def carica_da_file(file_path):
-    """Carica i libri dal file"""
-    # TODO
+    try:
+        with open(file_path, 'r', encoding='utf8') as file:
+            file.readline()
+            lista = list()
 
+            for line in file:
+                parti = line.strip().split(',')
+                lista.append(parti)
+
+            return lista
+    except FileNotFoundError:
+        print('il tuo file non esiste')
+        return None
 
 def aggiungi_libro(biblioteca, titolo, autore, anno, pagine, sezione, file_path):
-    """Aggiunge un libro nella biblioteca"""
 
+    for f in biblioteca:
+        titolo_libro = f[0]
+        if titolo == titolo_libro:
+            return None
 
+    nuovo_libro = [titolo, autore, anno, pagine, sezione]
+    biblioteca.append(nuovo_libro)
+    try:
+        with open(file_path, 'a', encoding='utf8', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(nuovo_libro)
+
+            return nuovo_libro
+    except OSError:
+        print('il tuo file non esiste')
+        return None
 
 def cerca_libro(biblioteca, titolo):
-    """Cerca un libro nella biblioteca dato il titolo"""
-    # TODO
-
+    for f in biblioteca:
+        titolo_libro = f[0]
+        if titolo == titolo_libro:
+            return f'{f[0]}, {f[1]}, {f[2]}, {f[3]}, {f[4]}'
+    return None
 
 def elenco_libri_sezione_per_titolo(biblioteca, sezione):
-    """Ordina i titoli di una data sezione della biblioteca in ordine alfabetico"""
-    # TODO
+    libri_sezione = []
+    for libro in biblioteca:
+        if int(libro[4]) == sezione:
+            libri_sezione.append(libro[0])
 
+    if len(libri_sezione) == 0:
+        return None
+
+    libri_sezione.sort()
+    return libri_sezione
 
 def main():
     biblioteca = []
@@ -56,7 +90,7 @@ def main():
 
             libro = aggiungi_libro(biblioteca, titolo, autore, anno, pagine, sezione, file_path)
             if libro:
-                print(f"Libro aggiunto con successo!")
+                print(f"Libro aggiunto con successo: {libro[0]} {libro[1]} {libro[2]}")
             else:
                 print("Non è stato possibile aggiungere il libro.")
 
@@ -68,7 +102,7 @@ def main():
             titolo = input("Inserisci il titolo del libro da cercare: ").strip()
             risultato = cerca_libro(biblioteca, titolo)
             if risultato:
-                print(f"Libro trovato: {risultato}")
+                print(f"Libro trovato:", risultato)
             else:
                 print("Libro non trovato.")
 
@@ -94,7 +128,5 @@ def main():
         else:
             print("Opzione non valida. Riprova.")
 
-
 if __name__ == "__main__":
     main()
-
